@@ -5,6 +5,7 @@ authors = ["James Irwin <irwineffect@gmail.com>"]
 edition = "2018"
 
 description = "A driver for the MCP795xx real time clock. Uses the embedded-hal crate."
+license = "MIT"
 repository = "https://github.com/irwineffect/mcp795xx-rs"
 categories = ["embedded"]
 keywords = ["no_std", "rtc", "real time clock", "embedded_hal"]
