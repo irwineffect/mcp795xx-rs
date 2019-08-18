@@ -1,6 +1,7 @@
 //#![deny(missing_docs)]
 //#![deny(warnings)]
 #![no_std]
+#![allow(non_snake_case)]
 
 extern crate embedded_hal as hal;
 use hal::blocking::spi;
@@ -21,7 +22,7 @@ pub struct DateTime {
 
 //#[macro_use]
 extern crate bitfield;
-use bitfield::{bitfield};
+
 
 /// MCP795xx Driver
 pub struct Mcp795xx<SPI, CS> {
@@ -32,7 +33,8 @@ pub struct Mcp795xx<SPI, CS> {
 
 impl<SPI, CS, E> Mcp795xx<SPI, CS>
     where SPI: spi::Transfer<u8, Error = E> + spi::Write<u8, Error = E>,
-          CS:  OutputPin
+          CS:  OutputPin<Error = E>,
+          E: core::fmt::Debug
 {
     pub fn new(spi: SPI, cs: CS) -> Result<Self, E> {
         let instance = Self {
@@ -68,7 +70,7 @@ impl<SPI, CS, E> Mcp795xx<SPI, CS>
         let mut year = registers::RTCYEAR(0);
         year.set_year(datetime.year);
 
-        let mut buff: [u8; 10] = [
+        let buff = [
             // Instruction
             (Instructions::WRITE as u8),
             // Address
@@ -83,9 +85,9 @@ impl<SPI, CS, E> Mcp795xx<SPI, CS>
             year.0,
         ];
 
-        self.cs.set_low();
-        self.spi.write(&buff);
-        self.cs.set_high();
+        self.cs.set_low().unwrap();
+        self.spi.write(&buff).unwrap();
+        self.cs.set_high().unwrap();
     }
 }
 
@@ -151,15 +153,10 @@ enum Addresses {
 }
 
 
-
-fn add(a: u8, b:u8) -> u8 {
-    a + b
-}
-
 #[cfg(test)]
 #[macro_use]
 extern crate std;
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
-    use super::*;
+
 }

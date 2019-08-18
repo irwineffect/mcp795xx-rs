@@ -1,10 +1,12 @@
+#![allow(unused)]
+
 extern crate bitfield;
 use bitfield::{bitfield};
 
 use core::convert::TryInto;
 
 // base year, change to 2100 when needed
-const base_year: u16 = 2000;
+const BASE_YEAR: u16 = 2000;
 
 bitfield! {
   pub struct RTCHSEC(u8);
@@ -207,11 +209,11 @@ bitfield! {
 
 impl RTCYEAR {
     pub fn set_year(&mut self, value: u16) {
-        if value > base_year+99 || value < base_year {
+        if value > BASE_YEAR+99 || value < BASE_YEAR {
             panic!("Invalid input: {}", value)
         }
 
-        let value: u8 = (value - base_year).try_into().unwrap();
+        let value: u8 = (value - BASE_YEAR).try_into().unwrap();
         self.set_YEARTEN(value/10);
         self.set_YEARONE(value % 10);
     }
@@ -219,7 +221,7 @@ impl RTCYEAR {
     pub fn year(&self) -> u16 {
         let year: u16 = (self.YEARTEN() * 10 + self.YEARONE()).into();
 
-        year + base_year
+        year + BASE_YEAR
     }
 }
 
@@ -231,7 +233,7 @@ mod tests {
 
     #[test]
     fn RTCSEC_test() {
-        let mut a = RTCSEC(1<<7 | 4 << 4 | 5);
+        let a = RTCSEC(1<<7 | 4 << 4 | 5);
         assert_eq!(a.ST(), true);
         assert_eq!(a.seconds(), 45);
     }
