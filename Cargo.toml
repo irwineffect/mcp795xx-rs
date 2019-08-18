@@ -4,6 +4,11 @@ version = "0.1.0"
 authors = ["James Irwin <irwineffect@gmail.com>"]
 edition = "2018"
 
+description = "A driver for the MCP795xx real time clock. Uses the embedded-hal crate."
+repository = "https://github.com/irwineffect/mcp795xx-rs"
+categories = ["embedded"]
+keywords = ["no_std", "rtc", "real time clock", "embedded_hal"]
+
 [dependencies]
 embedded-hal = "0.2.3"
 bitfield = "0.13.2"
