@@ -8,7 +8,7 @@ description = "A driver for the MCP795xx real time clock. Uses the embedded-hal 
 license = "MIT"
 repository = "https://github.com/irwineffect/mcp795xx-rs"
 categories = ["embedded"]
-keywords = ["no_std", "rtc", "real time clock", "embedded_hal"]
+keywords = ["no_std", "rtc", "embedded_hal"]
 
 [dependencies]
 embedded-hal = "0.2.3"
