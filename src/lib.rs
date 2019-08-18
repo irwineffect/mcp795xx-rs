@@ -14,7 +14,7 @@ pub struct DateTime {
     minutes: u8,
     hours: u8,
 
-    day_of_week: u8,
+    weekday: u8,
     date: u8,
     month: u8,
     year: u16,
@@ -44,6 +44,30 @@ impl<SPI, CS, E> Mcp795xx<SPI, CS>
         Ok(instance)
     }
 
+    pub fn get_time(&mut self) -> DateTime {
+        let mut buff = [0 as u8; 10];
+
+        // Instruction
+        buff[0] = Instructions::WRITE as u8;
+
+        // Address
+        buff[1] = Addresses::RTCSEC as u8;
+
+        self.cs.set_low().unwrap();
+        self.spi.transfer(&mut buff).unwrap();
+        self.cs.set_high().unwrap();
+
+        DateTime {
+            seconds : registers::RTCSEC(buff[2]).seconds(),
+            minutes : registers::RTCMIN(buff[3]).minutes(),
+            hours : registers::RTCHOUR(buff[4]).hours(),
+            weekday : registers::RTCWKDAY(buff[5]).WKDAY(),
+            date : registers::RTCDATE(buff[6]).date(),
+            month : registers::RTCMTH(buff[7]).month(),
+            year : registers::RTCYEAR(buff[8]).year()
+        }
+    }
+
     pub fn set_time(&mut self, datetime: DateTime) {
 
         let mut seconds = registers::RTCSEC(0);
@@ -59,7 +83,7 @@ impl<SPI, CS, E> Mcp795xx<SPI, CS>
         let mut weekday = registers::RTCWKDAY(0);
         weekday.set_PWRFAIL(false);
         weekday.set_VBATEN(true);
-        weekday.set_WKDAY(datetime.day_of_week);
+        weekday.set_WKDAY(datetime.weekday);
 
         let mut date = registers::RTCDATE(0);
         date.set_date(datetime.date);
