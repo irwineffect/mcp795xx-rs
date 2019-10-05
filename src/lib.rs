@@ -31,17 +31,17 @@ pub struct Mcp795xx<SPI, CS> {
 }
 
 
-impl<SPI, CS, E> Mcp795xx<SPI, CS>
-    where SPI: spi::Transfer<u8, Error = E> + spi::Write<u8, Error = E>,
-          CS:  OutputPin<Error = E>,
-          E: core::fmt::Debug
+impl<SPI, CS, E1, E2> Mcp795xx<SPI, CS>
+    where SPI: spi::Transfer<u8, Error = E1> + spi::Write<u8, Error = E1>,
+          CS:  OutputPin<Error = E2>,
+          E1: core::fmt::Debug,
+          E2: core::fmt::Debug
 {
-    pub fn new(spi: SPI, cs: CS) -> Result<Self, E> {
-        let instance = Self {
+    pub fn new(spi: SPI, cs: CS) -> Self {
+        Self {
             spi: spi,
             cs: cs
-        };
-        Ok(instance)
+        }
     }
 
     pub fn get_time(&mut self) -> DateTime {
