@@ -8,16 +8,16 @@ use hal::blocking::spi;
 use hal::digital::v2::OutputPin;
 
 mod registers;
-
+#[derive(Debug)]
 pub struct DateTime {
-    seconds: u8,
-    minutes: u8,
-    hours: u8,
+    pub seconds: u8,
+    pub minutes: u8,
+    pub hours: u8,
 
-    weekday: u8,
-    date: u8,
-    month: u8,
-    year: u16,
+    pub weekday: u8,
+    pub date: u8,
+    pub month: u8,
+    pub year: u16,
 }
 
 //#[macro_use]
@@ -44,11 +44,36 @@ impl<SPI, CS, E1, E2> Mcp795xx<SPI, CS>
         }
     }
 
+    pub fn enable(&mut self) {
+        let mut buff = [0 as u8; 3];
+
+        buff[0] = Instructions::READ as u8;
+        buff[1] = Addresses::RTCSEC as u8;
+
+        self.cs.set_low().unwrap();
+        self.spi.transfer(&mut buff).unwrap();
+        self.cs.set_high().unwrap();
+
+        let osc_enabled = registers::RTCSEC(buff[2]).ST();
+
+        if !osc_enabled {
+            buff[0] = Instructions::WRITE as u8;
+            buff[1] = Addresses::RTCSEC as u8;
+            let mut seconds = registers::RTCSEC(0);
+            seconds.set_st(true);
+            buff[2] = seconds.0;
+            self.cs.set_low().unwrap();
+            self.spi.transfer(&mut buff).unwrap();
+            self.cs.set_high().unwrap();
+        }
+
+    }
+
     pub fn get_time(&mut self) -> DateTime {
         let mut buff = [0 as u8; 10];
 
         // Instruction
-        buff[0] = Instructions::WRITE as u8;
+        buff[0] = Instructions::READ as u8;
 
         // Address
         buff[1] = Addresses::RTCSEC as u8;
