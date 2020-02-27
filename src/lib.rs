@@ -44,7 +44,7 @@ impl<SPI, CS, E1, E2> Mcp795xx<SPI, CS>
         }
     }
 
-    pub fn enable(&mut self) {
+    pub fn enable_oscillator(&mut self) {
         let mut buff = [0 as u8; 3];
 
         buff[0] = Instructions::READ as u8;
@@ -66,9 +66,31 @@ impl<SPI, CS, E1, E2> Mcp795xx<SPI, CS>
             self.spi.transfer(&mut buff).unwrap();
             self.cs.set_high().unwrap();
         }
-
     }
 
+    pub fn enable_vbat(&mut self) {
+        let mut buff = [0 as u8; 3];
+
+        buff[0] = Instructions::READ as u8;
+        buff[1] = Addresses::RTCWKDAY as u8;
+
+        self.cs.set_low().unwrap();
+        self.spi.transfer(&mut buff).unwrap();
+        self.cs.set_high().unwrap();
+
+        let vbat_enabled = registers::RTCWKDAY(buff[2]).VBATEN();
+
+        if !vbat_enabled {
+            buff[0] = Instructions::WRITE as u8;
+            buff[1] = Addresses::RTCWKDAY as u8;
+            let mut reg = registers::RTCWKDAY(0);
+            reg.set_VBATEN(true);
+            buff[2] = reg.0;
+            self.cs.set_low().unwrap();
+            self.spi.transfer(&mut buff).unwrap();
+            self.cs.set_high().unwrap();
+        }
+    }
     pub fn get_time(&mut self) -> DateTime {
         let mut buff = [0 as u8; 10];
 
