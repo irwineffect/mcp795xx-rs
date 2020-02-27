@@ -8,17 +8,9 @@ use hal::blocking::spi;
 use hal::digital::v2::OutputPin;
 
 mod registers;
-#[derive(Debug)]
-pub struct DateTime {
-    pub seconds: u8,
-    pub minutes: u8,
-    pub hours: u8,
+pub mod datetime;
 
-    pub weekday: u8,
-    pub date: u8,
-    pub month: u8,
-    pub year: u16,
-}
+pub use datetime::DateTime;
 
 //#[macro_use]
 extern crate bitfield;

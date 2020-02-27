@@ -10,6 +10,10 @@ repository = "https://github.com/irwineffect/mcp795xx-rs"
 categories = ["embedded"]
 keywords = ["no_std", "rtc", "embedded_hal"]
 
+[features]
+default = ["chrono"]
+
 [dependencies]
 embedded-hal = "0.2.3"
 bitfield = "0.13.2"
+chrono = {version = "0.4.10", default-features = false, optional = true}
